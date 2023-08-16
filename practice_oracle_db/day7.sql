@@ -1,10 +1,7 @@
 SELECT * 
 FROM employees;
-
-
 SELECT * 
 FROM departments;
-
 -- inner join 내부조인 (동등 조인이라고 함)
 -- 각 컬럼에 동일한 값이 있을때 결합
 SELECT employees.emp_name
@@ -183,8 +180,72 @@ ORDER BY mem_mileage DESC;
 -- 최숙경 학생의 수강이력의 건수는?
 SELECT 이름
      , 학번     
-     , (SELECT COUNT(수강내역번호)
-        FROM 수강내역)as 수강횟수
+     , (SELECT COUNT(학번)
+        FROM 수강내역
+        WHERE 학생.학번 = 수강내역.학번)as 수강횟수
 FROM 학생
 WHERE 이름 = '최숙경';
                     
+SELECT * FROM 학생;                    
+SELECT * FROM 수강내역;
+SELECT * FROM 과목;
+SELECT * FROM 강의내역;
+
+
+select * from jobs;
+select * from job_history;
+select * from employees;
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- 심화문제
+-- employees, jobs, jobs_history 테이블을 활용하여 사번(employee_id), 이름(emp_name) ,가격(salary), 입사년도를 출력하시오
+-- 가격은 평균이상만 출력, 입사년도는 오름차순으로 출력
+
+SELECT a.employee_id as 사번
+    ,emp_name as 이름
+    ,a.salary as 가격
+    ,TO_CHAR(hire_date,'YYYY')||'년' as 입사년도
+FROM employees a, jobs b, job_history c 
+WHERE a.employee_id = c.employee_id
+AND b.job_id = c.job_id
+AND salary >= (SELECT AVG(salary)
+               FROM employees)
+GROUP BY a.employee_id,emp_name,a.salary, TO_CHAR(hire_date,'YYYY')
+ORDER BY 4;
+
+select * from 학생;
+select * from 강의내역;
+select * from 교수;
+
+--이소진 교수의 총수강인원이 얼마나 되는지 출력하세요(교수이름, 전공, 수강인원)
+
+SELECT 교수이름
+     , 전공
+     , SUM(수강인원)as 총수강인원
+FROM 교수, 강의내역
+WHERE 교수이름 = '이소진'
+AND 교수.교수번호 = 강의내역.교수번호
+GROUP BY 교수이름, 전공;     
+
+-- 평점이 전체 평균 평점보다 높은 학생만 서브쿼리를 사용하여 출력하시오. 
+-- 평점은 소수점 1자리까지만, 그학생의 담당교수도 같이 출력
+
+SELECT 이름
+     , 교수이름
+     , ROUND(평점, 2)        
+FROM 학생 a, 교수 b    
+WHERE a.전공 = b.전공
+AND a.평점 >= (SELECT AVG(평점)
+              FROM 학생)
+ORDER BY 3 desc;
