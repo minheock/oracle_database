@@ -178,16 +178,16 @@ SELECT m.mem_name
                                                      WHERE SUBSTR(m.mem_add1, 1, 2) = '대전'
                                                      AND m.mem_id = c.cart_member(+)
                                                      AND c.cart_prod = p.prod_id(+))
-           THEN SUM(p.prod_sale * c.cart_qty)
-           END, 0) as 합산금액
-    ,  SUM( NVL(CASE WHEN SUM(p.prod_sale * c.cart_qty) > (SELECT ROUND(SUM(p.prod_sale * c.cart_qty)/
+                                                     THEN SUM(p.prod_sale * c.cart_qty)
+                                                     END, 0) as 합산금액
+    , SUM( NVL(CASE WHEN SUM(p.prod_sale * c.cart_qty) > (SELECT ROUND(SUM(p.prod_sale * c.cart_qty)/
                                                      COUNT(DISTINCT m.mem_name), 0)
                                                      FROM member m, cart c, prod p
                                                      WHERE SUBSTR(m.mem_add1, 1, 2) = '대전'
                                                      AND m.mem_id = c.cart_member(+)
                                                      AND c.cart_prod = p.prod_id(+))
-           THEN SUM(p.prod_sale * c.cart_qty)
-           END, 0)) OVER(ORDER BY m.mem_name) as 누적합산금액
+                                                     THEN SUM(p.prod_sale * c.cart_qty)
+                                                     END, 0)) OVER(ORDER BY m.mem_name) as 누적합산금액
 FROM member m, cart c, prod p
 WHERE SUBSTR(m.mem_add1, 1, 2) = '대전'
 AND m.mem_id = c.cart_member(+)
@@ -197,20 +197,11 @@ ORDER BY 1;
 
 
 
-SELECT ROUND(SUM(p.prod_sale * c.cart_qty)/COUNT(DISTINCT m.mem_name), 0)
+SELECT ROUND(SUM(p.prod_sale * c.cart_qty)/COUNT(DISTINCT m.mem_name), 0) as AVEREGE
 FROM member m, cart c, prod p
 WHERE SUBSTR(m.mem_add1, 1, 2) = '대전'
 AND m.mem_id = c.cart_member(+)
 AND c.cart_prod = p.prod_id(+);
-
-
-SELECT ROUND(SUM(p.prod_sale * c.cart_qty)/COUNT(DISTINCT m.mem_name), 0) as 평균구매합산금액
-FROM member m, cart c, prod p
-WHERE SUBSTR(m.mem_add1, 1, 2) = '대전'
-AND m.mem_id = c.cart_member(+)
-AND c.cart_prod = p.prod_id(+);
-
-
 
 
 
@@ -231,5 +222,5 @@ AND b.cart_prod = c.prod_id(+)
 GROUP BY a.mem_id, a.mem_name
 ORDER BY 6 desc) a
 )
-WHERE rnum <= 18;
+WHERE rnum BETWEEN 1 and 24 ;
 
