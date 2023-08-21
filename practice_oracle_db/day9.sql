@@ -137,7 +137,79 @@ WHERE NOT EXISTS(SELECT *
     
     REGEXP_LIKE : Á¤±Ô½Ä ÆÐÅÏÀ» °Ë»ö
 */                 
+
+/*
+    ¹Ýº¹ ½ÃÄý
+    * : 0°³ ÀÌ»ó
+    + : 1°³ ÀÌ»ó
+    ? : 0, 1°³
+    {n} : n¹ø
+    {n,} : n¹ø ÀÌ»ó
+    {n,m} : n¹ø ÀÌ»ó m¹ø ÀÌÇÏ
+*/
 SELECT *
 FROM member
 WHERE REGEXP_LIKE(mem_comtel, '^..-');
-                 
+
+-- ¿µ¹®ÀÚ 3¹ø ÃâÇö @ ÆÐÅÏ Á¶È¸ (abc@gmail.com)
+SELECT *
+FROM member
+WHERE REGEXP_LIKE(mem_mail, '^[a-zA-Z]{3,6}@');   
+
+-- mem_add2 ¹®ÀÚ ¶ç¾î¾²±â ¹®ÀÚ ÆÐÅÏÀÇ µ¥ÀÌÅÍ¸¦ Ãâ·ÂÇÏ½Ã¿À
+SELECT mem_name
+    ,  mem_add2
+FROM member
+--WHERE REGEXP_LIKE(mem_add2,'. '); -- ¾î´À¹®ÀÚµç ¶ç¾î¹ö·Á
+--WHERE REGEXP_LIKE(mem_add2,'[°¡-ÆR] [0-9]'); -- ÇÑ±Û
+--WHERE REGEXP_LIKE(mem_add2,'[°¡-ÆR]$'); -- ÇÑ±Û·Î³¡³ª´Â  
+                                       --$ -> ³¡³ª´Â
+--WHERE REGEXP_LIKE(mem_add2,'^[^°¡-ÆR]*$'); --ÇÑ±ÛÀÌ¾ø´Â
+WHERE not REGEXP_LIKE(mem_add2,'[°¡-ÆR]'); --ÇÑ±ÛÀÌ¾ø´Â
+/*
+    | <- ¶Ç´Â
+    () <- ÆÐÅÏ±×·ì
+    J·Î ½ÃÀÛÇÏ¸ç, ¼¼¹øÂ° ¹®ÀÚ°¡ M¶Ç´Â NÀÎ Á÷¿øÀÌ¸§ Á¶È¸
+*/
+SELECT emp_name
+FROM employees
+WHERE REGEXP_LIKE(emp_name, '^J.(n|m)');
+
+-- REGEXP_SUBSTR Á¤±ÔÇ¥Çö½Ä ÆÐÅÏÀ» ÀÏÄ¡ÇÏ´Â ¹®ÀÚ¿­ ¹ÝÈ¯
+-- ÀÌ¸ÞÀÏ @¸¦ ±âÁØÀ¸·Î ¾Õ°ú µÚ¸¦ Ãâ·ÂÇÏ½Ã¿À
+                          --ÆÐÅÏ, ½ÃÀÛÀ§Ä¡, ¸ÅÄª¼ø¹ø
+SELECT REGEXP_SUBSTR(mem_mail, '[^@]+',1,1) as mem_id
+      ,REGEXP_SUBSTR(mem_mail, '[^@]+', 1, 2) as mem_domain
+FROM member;      
+
+SELECT REGEXP_SUBSTR('A-B-C', '[^-]+', 1,1) as a
+    ,  REGEXP_SUBSTR('A-B-C', '[^-]+', 1,2) as b
+    ,  REGEXP_SUBSTR('A-B-C', '[^-]+', 1,3) as c
+FROM dual;    
+
+SELECT REGEXP_SUBSTR('pang su hi 1234', '[0-9]')    --default 1,1
+    ,  REGEXP_SUBSTR('pang su hi 1234', '[^0-9]')
+    ,  REGEXP_SUBSTR('pang su hi 1234', '[^0-9]+')
+FROM dual;    
+
+-- ¶ç¾î¾²±â¸¦ ±âÁØÀ¸·Î 2¹øÂ° ÃâÇöÇÏ´Â ÁÖ¼Ò¸¦ Ãâ·ÂÇÏ½Ã¿À.
+SELECT mem_add1
+FROM member;
+SELECT REGEXP_SUBSTR(mem_add1,'[^ ]+', 1,2)
+FROM member;
+-- ¶ç¾î¾²±â°¡ ÇÑ±ÛÀÌ ¾Æ´Ï´Ï±ñ ÇÑ±ÛÀÇ 2¹øÂ°¸¦ Ãâ·Â°¡´É
+SELECT REGEXP_SUBSTR(mem_add1,'[°¡-ÆR]+', 1,2)
+FROM member;
+
+SELECT * 
+FROM(
+SELECT 'abcd1234' as id FROM dual
+UNION
+SELECT 'Abcd123456' as id FROM dual
+UNION
+SELECT 'A1234' as id FROM dual
+UNION
+SELECT 'A12345678964646545' as id FROM dual
+)
+WHERE REGEXP_LIKE(id, '^[a-zA-Z1-9]{8,14}$') -- 8 ~ 14 »çÀÌ ÅØ½ºÆ® ¸¸Á·ÇÏ´Â µ¥ÀÌÅÍÃâ·Â.
+;

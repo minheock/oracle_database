@@ -32,7 +32,8 @@ ORDER BY 2 desc;
 ---------------------------------------------------------------------
 ----------4-1번 문제 ---------------------------------------------------
 -- 가장 많이 가입(처음등록)한 요일과 건수를 출력하시오 
-SELECT * FROM(
+SELECT 요일, 건수 
+FROM(
 SELECT ROWNUM rnum
       ,a.*
 FROM(
@@ -46,35 +47,19 @@ WHERE rnum = 1;
 ---------------------------------------------------------------------
 ----------4-2번 문제 ---------------------------------------------------
 -- 남녀 인원수를 출력하시오 
-SELECT case sex_code when 'M' then '남자'
-                     when 'F' then '여자'
-                     else '미등록'
-        end as gender
-    , case sex_code when 'M' then count('M')
-                     when 'F' then count('F')
-                     else count(*)- count('M') + count('F')
-                     end as cnt
+SELECT NVL(decode(sex_code, 'M', '남자', 'F', '여자', '미등록'),'합계') as gender
+    ,  COUNT(decode(sex_code, 'M', '남자', 'F', '여자', '미등록')) as 회수
 FROM customer
-GROUP BY ROLLUP(sex_code);
+GROUP BY ROLLUP(decode(sex_code, 'M', '남자', 'F', '여자', '미등록'));
 
 ---------------------------------------------------------------------
 ----------5번 문제 ---------------------------------------------------
 --월별 예약 취소 건수를 출력하시오 (많은 달 부터 출력)
-SELECT * FROM address;
-SELECT * FROM customer;
-SELECT * FROM item;
-SELECT * FROM order_info;
-SELECT * FROM reservation;
-desc reservation;
-
 SELECT SUBSTR(SUBSTR(reserv_date,5,6),1,2)as 월
       ,COUNT(SUBSTR(SUBSTR(reserv_date,5,6),1,2)) as 취소건수
 FROM reservation
 WHERE cancel = 'Y'
 GROUP BY SUBSTR(SUBSTR(reserv_date,5,6),1,2)
 ORDER BY 2 desc;
-
-
-
 
 ---------------------------------------------------------------------
