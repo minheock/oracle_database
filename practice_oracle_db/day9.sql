@@ -43,6 +43,9 @@ COMMIT;
 
 ----------------------------------------------------------
 ----------------------------------------------------------
+select * from exp_goods_asia;
+
+
 SELECT seq, goods
 FROM exp_goods_asia
 WHERE country = 'ÇÑ±¹'

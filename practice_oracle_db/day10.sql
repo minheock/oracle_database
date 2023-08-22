@@ -170,8 +170,8 @@ GROUP BY e.emp_name
 HAVING sum(s.amount_sold) > (SELECT sum(s.amount_sold)
                             FROM employees e, sales s
                             WHERE e.employee_id = s.employee_id
-                            AND TO_CHAR(s.sales_date, 'YYYY') = 2000
-                            GROUP BY e.emp_name 
+                            AND TO_CHAR(s.sales_date, 'YYYY') = 2000 
+                            GROUP BY e.emp_name                       
                             )
 ;
 
