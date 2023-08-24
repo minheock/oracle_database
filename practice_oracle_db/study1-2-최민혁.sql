@@ -57,3 +57,49 @@ AND r.cancel = 'N'
 GROUP BY a.address_detail
 ORDER BY 2 DESC;
 ----------------------------------------------------------------------------
+-- 고객별 지점 (branch) 방문 횟수와 방문객의 합을 출력
+-- 방문 횟수가 4번 이상 합을 출력하시오 (예약 취소건 제외) 정렬 (방문횟수 내림, 방문객수 내림)
+select *from customer;
+select *from address;
+select *from reservation;
+SELECT a.customer_id
+    ,  a.customer_name
+    ,  b.branch
+    ,  COUNT(a.customer_id) as 지점방문횟수
+    ,  sum(b.visitor_cnt) as 방문객수
+FROM customer a, reservation b
+WHERE a.customer_id = b.customer_id
+AND b.cancel = 'N'
+GROUP BY (a.customer_id, a.customer_name, b.branch)
+HAVING  COUNT(a.customer_id) >= 4
+ORDER BY 4 desc , 5 desc;
+
+-- 가장 방문을 많이 한 고객의 그동안 구매한 품목별 합산 금액을 출력하시오.
+-- W1338910
+SELECT reserv_no
+FROM reservation
+WHERE cancel = 'N'
+AND customer_id = 'W1338910';
+
+SELECT (SELECT product_name FROM item  WHERE item_id = a.item_id) as category
+    ,  sum(sales) as 구매합계
+FROM order_info a
+WHERE reserv_no IN (SELECT reserv_no
+                    FROM reservation
+                    WHERE cancel = 'N'
+                    AND customer_id = (SELECT customer_id
+                                        FROM(
+                                        SELECT a.customer_id
+                                            ,  a.customer_name
+                                            ,  b.branch
+                                            ,  COUNT(a.customer_id) as 지점방문횟수
+                                            ,  sum(b.visitor_cnt) as 방문객수
+                                        FROM customer a, reservation b
+                                        WHERE a.customer_id = b.customer_id
+                                        AND b.cancel = 'N'
+                                        GROUP BY (a.customer_id, a.customer_name, b.branch)
+                                        ORDER BY 4 desc , 5 desc
+                                        )
+                                        WHERE rownum <= 1)
+ )
+GROUP BY item_id;

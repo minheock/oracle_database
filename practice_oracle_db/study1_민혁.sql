@@ -29,6 +29,12 @@ GROUP BY job
 HAVING COUNT(job) >= 1
 ORDER BY 2 desc;
 
+SELECT DISTINCT job
+    ,  COUNT(job)
+FROM customer
+WHERE job IS NOT NULL
+GROUP BY job
+ORDER BY 2 desc;
 ---------------------------------------------------------------------
 ----------4-1번 문제 ---------------------------------------------------
 -- 가장 많이 가입(처음등록)한 요일과 건수를 출력하시오 
@@ -51,6 +57,39 @@ SELECT NVL(decode(sex_code, 'M', '남자', 'F', '여자', '미등록'),'합계') as gende
     ,  COUNT(decode(sex_code, 'M', '남자', 'F', '여자', '미등록')) as 회수
 FROM customer
 GROUP BY ROLLUP(decode(sex_code, 'M', '남자', 'F', '여자', '미등록'));
+
+
+SELECT NVL(gender, '합계') as gender
+    ,  count(*) as cnt
+FROM (
+        SELECT DECODE(sex_code, 'M', '남자', 'F', '여자', '미등록') as gender
+        FROM customer
+)    
+GROUP BY ROLLUP(gender)
+;
+-- grouping_id : group by 절에서 그룹화를 진행할 때, 여러 컬럼에 대한
+--                 서브 토탈을 쉽게 구별하기 위한 함수
+SELECT sex_code
+    ,  GROUPING_ID(sex_code) as groupid
+    ,  count(*) as cnt
+FROM customer
+GROUP BY ROLLUP(sex_code);
+
+
+
+SELECT CASE WHEN sex_code = 'F' THEN '여자'
+            WHEN sex_code = 'M' THEN '남자'
+            WHEN sex_code IS NOT NULL AND groupid = 0 THEN '미등록'
+            ELSE '합계'
+            END as gender
+            ,cnt
+FROM(SELECT sex_code
+    ,  GROUPING_ID(sex_code) as groupid
+    ,  COUNT(*) as cnt 
+FROM customer
+GROUP BY ROLLUP(sex_code)
+);            
+            
 
 ---------------------------------------------------------------------
 ----------5번 문제 ---------------------------------------------------
