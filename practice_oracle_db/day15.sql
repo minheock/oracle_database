@@ -204,11 +204,54 @@ SELECT *
 FROM tb_user;
 SELECT * 
 FROM user_tab_columns
-WHERE table_name = 'TB_USER'
+WHERE table_name = 'TB_USER';
 
 SELECT user_id
     ,  user_nm
     ,  user_pw
     ,  user_mileage
 FROM tb_user
-WHERE user_id = '';
+WHERE user_id = 'a001';
+
+INSERT INTO tb_user (user_id, user_nm, user_pw, create_dt)
+VALUES (?,?,?, SYSDATE);
+
+select * from bbs;
+desc bbs;
+desc tb_user;
+select * from tb_user;
+
+
+SELECT ROWNUM as rnum
+    ,  count(*) OVER() as all_cnt
+    ,  a.bbs_no as bbs_no
+    ,  a.bbs_title as bbs_title
+    ,  a.author_id as author_id
+    ,  a.update_dt as update_dt
+from (
+SELECT bbs_no
+    ,  bbs_title
+    ,  author_id
+    ,  TO_CHAR(update_dt, 'YYMMDD HH24:MI:SS') AS update_dt
+FROM bbs
+WHERE parent_no IS NULL
+ORDER BY update_dt DESC
+)a ;
+SELECT * FROM bbs;
+SELECT ROWNUM as rnum       ,  count(*) OVER() as all_cnt       ,  a.bbs_no as bbs_no       ,  a.bbs_title as bbs_title       ,  a.author_id as author_id       ,  a.update_dt as update_dt   from (  SELECT bbs_no      ,  bbs_title      ,  author_id      ,  TO_CHAR(update_dt, 'YYMMDD HH24:MI:SS') AS update_dt  FROM bbs  WHERE parent_no IS NULL  ORDER BY update_dt DESC  )a ;
+
+SELECT bbs_no
+    ,  bbs_content
+    ,  parent_no
+FROM bbs;
+
+SELECT DECODE(level, 1, '∏ﬁ¿Œ±€', '¥Ò±€') as status
+    ,  a.bbs_no                         as bbs_no
+    ,  LPAD(' ', 3 * (level-1)) || a.bbs_content as bbs_content
+    ,  a.author_id                      as author_id
+    ,  a. update_dt                     as update_dt
+FROM bbs a
+START WITH bbs_no = 1
+CONNECT BY PRIOR a.bbs_no = a.parent_no
+ORDER SIBLINGS BY update_dt desc;
+desc bbs;
