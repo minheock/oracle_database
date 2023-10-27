@@ -137,6 +137,8 @@ GROUP BY a.cust_id, a.employee_id;
 -- employees, sales 테이블 사용 판매금액 (amount_sold) 판매수량 (quantity_sold)
 SELECT *
 FROM employees;
+
+
 SELECT *
 FROM sales;
 

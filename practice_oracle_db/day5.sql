@@ -78,6 +78,7 @@ SELECT TO_CHAR(1234566, '999,999,999')
         ,TO_CHAR(SYSDATE, 'YYYYMMDD HH24:MI:SS')
         ,TO_CHAR(SYSDATE,'day')
         ,TO_CHAR(SYSDATE,'dd')
+        ,TO_CHAR(SYSDATE,'mm')
         ,TO_CHAR(SYSDATE,'d')
 FROM dual;
 
